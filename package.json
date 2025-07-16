@@ -1,0 +1,31 @@
+{
+  "name": "bus-on-render",
+  "version": "1.0.0",
+  "description": "部署在render.com的总线服务",
+  "main": "app.mjs",
+  "scripts": {
+    "dev": "env-cmd node app.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssc19193/bus-on-render.git"
+  },
+  "keywords": [],
+  "author": "散修厉飞雨",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ssc19193/bus-on-render/issues"
+  },
+  "homepage": "https://github.com/ssc19193/bus-on-render#readme",
+  "dependencies": {
+    "dayjs": "^1.11.11",
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
+  }
+}

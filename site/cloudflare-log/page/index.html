@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bus on render</title>
+  <style>
+    p{
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+    <div id="log">
+    </div>
+    <p id="pcnt"></p>
+    <script>
+      let pcnt = 0;
+      let logEl = document.querySelector('#log');
+      function line(one){
+        let p = document.createElement('p');
+        p.innerText = one;
+        logEl.append(p)
+      }
+      
+      function pull(){
+        document.querySelector('#pcnt').innerText = pcnt ++;
+        fetch('./pull')
+        .then(res=>res.json())
+        .then(res=>{
+          res?.map(one=>line(one))
+          window.scrollTo(0,screen.availHeight)
+        }).catch(e=>{})
+        .then(res=>{
+          setTimeout(pull, 2000)
+        })
+      }
+
+      pull()
+
+    </script>
+</body>
+</html>
