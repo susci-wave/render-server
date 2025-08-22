@@ -13,7 +13,7 @@
             color: #333;
         }
         #filter {
-            display: flex;
+            display: none; /* 默认隐藏 */
             flex-direction: column;
             gap: 10px;
             position: fixed;
@@ -24,10 +24,25 @@
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             z-index: 1000;
-            opacity: 0.2;
-        }
-        #filter:hover {
             opacity: 1;
+        }
+        /* 悬浮图标样式 */
+        #filter-toggle {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
         }
         .filter-item select {
             border-radius: 5px;
@@ -93,12 +108,33 @@
             .content-item {
                 grid-template-columns: 1fr;
             }
+            /* 在移动端，悬浮图标位置适当调整 */
+            #filter-toggle {
+                right: 15px;
+                bottom: 15px;
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            /* 移动端filter居中显示 */
+            #filter {
+                left: 50%;
+                right: auto;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 80%;
+                max-width: 300px;
+            }
         }
     </style>
     <script src="./script/chart.umd-4.5.0.js"></script>
     <script src="./script/virtual-scroller-dom.js"></script>
 </head>
 <body>
+    <!-- 悬浮图标 -->
+    <div id="filter-toggle">⚙️</div>
+    
     <div id="filter">
         <div class="filter-item">
             2025年8月16日 - 2025年8月16日
@@ -108,6 +144,8 @@
             <input type="checkbox" id="order_direct">
             <label for="rate_change_5">浮动>=5</label>
             <input type="checkbox" id="rate_change_5">
+            <label for="can_buy">购买</label>
+            <input type="checkbox" id="can_buy" checked>
         </div>
         <div class="filter-item">
             <radio id="order_type">
@@ -133,6 +171,16 @@
 
     <script type="text/javascript" src="./index.js"></script>
     <script>
+        // 添加悬浮图标点击事件
+        document.getElementById('filter-toggle').addEventListener('click', function() {
+            const filter = document.getElementById('filter');
+            if (filter.style.display === 'none' || filter.style.display === '') {
+                filter.style.display = 'flex';
+            } else {
+                filter.style.display = 'none';
+            }
+        });
+        
         let contentItemEl = document.querySelector('#content>.content-item').cloneNode(true);
 
         function renderJj(one){
@@ -188,7 +236,8 @@
             days: 15,
             days_limit: 30,
             order_type: jj_feature_fn[0].name,
-            order_direct: false
+            order_direct: false,
+            can_buy: true
         }
         
         fetchData(options.days, options.days_limit).then(jjlist =>{
@@ -243,6 +292,10 @@
         });
         document.getElementById('rate_change_5').addEventListener('change', function(e) {
             options.rate_change_5 = e.target.checked;
+            renderPage();
+        });
+        document.getElementById('can_buy').addEventListener('change', function(e) {
+            options.can_buy = e.target.checked;
             renderPage();
         });
 

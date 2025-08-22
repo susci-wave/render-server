@@ -129,8 +129,7 @@ let jj_feature_fn = [
         name: 'calc5DayUpRate',
         text: '5日上涨天数比例',
         fn: calc5DayUpRate
-    },
-
+    }
 ];
 
 
@@ -138,7 +137,7 @@ let jj_feature_fn = [
 function calcNet(jj){
     jj.feature = {}
     jj_feature_fn.map(el=>{
-        jj.feature[el.name] = el.fn.call(null, jj);
+        el.fn && (jj.feature[el.name] = el.fn.call(null, jj));
     })
 }
 
