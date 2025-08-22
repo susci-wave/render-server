@@ -81,38 +81,38 @@ let jj_feature_fn = [
         name: 'netMin',
         text: '净值最小值',
         fn: jj => Math.min(...jj.net)
-    },  
+    }, 
     {
         name: 'netMaxMinusMin',
-        text: '15日净值最大值与最小值的差值',
+        text: '区间波动',
         fn: jj => {
             return ((jj.feature.netMax - jj.feature.netMin)/jj.feature.netMin*100).toFixed(2);
         }
     },
     {
         name: 'netLatestMinusMin',
-        text: '15日净值最新值与最小值的差值',
+        text: '当前区间涨幅',
         fn: jj=>{
             return ((jj.net[jj.net.length-1] - jj.feature.netMin)/jj.feature.netMin*100).toFixed(2);
         }
     },
     {
         name: 'netLatestToMax',
-        text: '15日净值最新值与最大值的差值',
+        text: '当前区间跌幅',
         fn: jj => {
             return  (jj.feature.netMaxMinusMin - jj.feature.netLatestMinusMin).toFixed(2);
         }
     },
     {
         name: 'latestRate',
-        text: '当前涨幅',
+        text: '昨日涨幅',
         fn: jj=>{
             return ((jj.net[jj.net.length-1] - jj.net[jj.net.length-2])/jj.net[jj.net.length-2]*100).toFixed(2);
         }
     },
     {
         name: 'calc5DayRate',
-        text: '5日涨幅',
+        text: '5日区间波动',
         fn: jj=>{
             let net = jj.net;
             let latest = net[net.length-1];
@@ -122,8 +122,13 @@ let jj_feature_fn = [
     },
     {
         name: 'calcUpDayCnt',
-        text: '连续上涨天数',
+        text: '连涨天数',
         fn: calcUpDayCnt
+    },
+    {
+        name: 'calc5DayRateUpRate',
+        text: '5日上涨幅度比例',
+        fn: calc5DayRateUpRate
     },
     {
         name: 'calc5DayUpRate',
@@ -142,7 +147,7 @@ function calcNet(jj){
 }
 
 // 计算5天上涨的比例
-function calc5DayUpRate(jj){
+function calc5DayRateUpRate(jj){
     let net = jj.net;
     let add = Math.max(0, net[net.length-1] - net[net.length-2])
                 +Math.max(0, net[net.length-2] - net[net.length-3])
@@ -167,4 +172,16 @@ function calcUpDayCnt(jj){
             return cnt;
         }
     }
+}
+
+// 计算5天上涨天数比例
+function calc5DayUpRate(jj){
+    let net = jj.net;
+    let upCount = 0;
+    for (let i = net.length - 1; i > net.length - 6 && i >= 1; i--) {
+        if (net[i] >= net[i - 1]) {
+            upCount++;
+        }
+    }
+    return ((upCount / 5) * 100).toFixed(2);
 }

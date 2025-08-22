@@ -86,6 +86,10 @@
             font-size: 18px;
             color: #2c3e50;
         }
+        .fund-name a{
+            text-decoration: none;
+            color: inherit;
+        }
         .fund-details {
             font-size: 14px;
             color: #7f8c8d;
@@ -157,9 +161,11 @@
     <div id="content">
         <div class="content-item">
             <div class="fund-info">
-                <div class="fund-name">基金名称</div>
-                <div class="fund-details">
+                <div class="fund-name">
+                    <span></span>
                     <a target="_blank" referrerpolicy="no-referrer">基金代码</a>
+                </div>
+                <div class="fund-details">
                     <span>申购状态 / rate</span>
                 </div>
             </div>
@@ -185,16 +191,12 @@
 
         function renderJj(one){
             let el = contentItemEl.cloneNode(true);
-            el.querySelector('.fund-name').textContent = one.name + "("+ one.code +")";
-            el.querySelector('.fund-details a').textContent = '详情';
-            el.querySelector('.fund-details a').href = `https://fund.10jqka.com.cn/${one.code}/`;
+            el.querySelector('.fund-name span').textContent = one.name;
+            el.querySelector('.fund-name a').textContent = "("+ one.code +")";
+            el.querySelector('.fund-name a').href = `https://fund.10jqka.com.cn/${one.code}/`;
             el.querySelector('.fund-details span').textContent = `
                 ${one.sgstat} 
-                / 浮动:${one.feature.netMaxMinusMin} 
-                / 涨幅:${one.feature.netLatestMinusMin} 
-                / 跌幅:${one.feature.netLatestToMax}
-                / 5天增加比例:${one.feature.calc5DayUpRate}
-                / 连续上涨天数:${one.feature.calcUpDayCnt}
+                ${jj_feature_fn.map(el=>el.text + ':' + one.feature[el.name]).join(' / ')}
                 `;
             const canvas = el.querySelector('.fund-chart canvas');
 
