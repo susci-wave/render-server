@@ -5,6 +5,7 @@ import hk1_app from './site/hk1-app/index.mjs'
 import cloudFlareLog from './site/cloudflare-log/index.mjs'
 import animefilter from './site/animefilter/index.mjs'
 import wssServer from './sless/server-sless.mjs'
+import fund_app from './site/fund/index.mjs'
 
 const uuid = process.env.UUID;
 const port = process.env.APP_PORT || 80;
@@ -13,6 +14,7 @@ const app = express();
 hk1_app(app)
 cloudFlareLog(app)
 animefilter(app)
+fund_app(app)
 
 app.get('/', function(req,res){
     res.sendStatus(200)

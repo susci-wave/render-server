@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基金净值</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0 20px;
+            color: #333;
+        }
+        #filter {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            opacity: 0.2;
+        }
+        #filter:hover {
+            opacity: 1;
+        }
+        .filter-item select {
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        /* 添加order_type的垂直排列样式 */
+        #order_type {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        #content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .content-item {
+            
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            /* padding: 20px; */
+            margin-bottom: 8px;
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 20px;
+            align-items: center;
+            width: 100%;
+        }
+        .content-item > div {
+            padding: 10px;
+        }
+        .fund-info{
+            text-align: center;
+        }
+        .fund-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        .fund-details {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .fund-chart {
+            height: 100px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            position: relative;
+        }
+        .fund-chart canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        @media (max-width: 768px) {
+            .content-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="./script/chart.umd-4.5.0.js"></script>
+    <script src="./script/virtual-scroller-dom.js"></script>
+</head>
+<body>
+    <div id="filter">
+        <div class="filter-item">
+            2025年8月16日 - 2025年8月16日
+        </div>
+        <div class="filter-item">
+            <label for="order_direct">逆序</label>
+            <input type="checkbox" id="order_direct">
+            <label for="rate_change_5">浮动>=5</label>
+            <input type="checkbox" id="rate_change_5">
+        </div>
+        <div class="filter-item">
+            <radio id="order_type">
+                <label><input type="radio" name="radio" value="0" > 浮动</label>
+                <label><input type="radio" name="radio" value="2"> 跌幅</label>
+            </radio>
+        </div>
+    </div>
+    <div id="content">
+        <div class="content-item">
+            <div class="fund-info">
+                <div class="fund-name">基金名称</div>
+                <div class="fund-details">
+                    <a target="_blank" referrerpolicy="no-referrer">基金代码</a>
+                    <span>申购状态 / rate</span>
+                </div>
+            </div>
+            <div class="fund-chart">
+                <canvas></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="./index.js"></script>
+    <script>
+        let contentItemEl = document.querySelector('#content>.content-item').cloneNode(true);
+
+        function renderJj(one){
+            let el = contentItemEl.cloneNode(true);
+            el.querySelector('.fund-name').textContent = one.name + "("+ one.code +")";
+            el.querySelector('.fund-details a').textContent = '详情';
+            el.querySelector('.fund-details a').href = `https://fund.10jqka.com.cn/${one.code}/`;
+            el.querySelector('.fund-details span').textContent = `
+                ${one.sgstat} 
+                / 浮动:${one.feature.netMaxMinusMin} 
+                / 涨幅:${one.feature.netLatestMinusMin} 
+                / 跌幅:${one.feature.netLatestToMax}
+                / 5天增加比例:${one.feature.calc5DayUpRate}
+                / 连续上涨天数:${one.feature.calcUpDayCnt}
+                `;
+            const canvas = el.querySelector('.fund-chart canvas');
+
+            setTimeout(() => {
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: window.jj_labels,
+                        datasets: [{
+                            label: '-',
+                            data: one.net.map(Number),
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: false,
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+            }, 0);
+
+            return el;
+        }
+
+        let options = {
+            days: 15,
+            days_limit: 30,
+            order_type: jj_feature_fn[0].name,
+            order_direct: false
+        }
+        
+        fetchData(options.days, options.days_limit).then(jjlist =>{
+            let jj_labels = jjlist.map(el => el.date).map(el=>el.substring(5)).reverse();
+            document.querySelector('.filter-item:nth-child(1)').textContent = `${jj_labels[0]} - ${jj_labels[jj_labels.length-1]}` 
+
+            let jjdata = mergeNet(jjlist);
+
+            window.virtualScroller = new VirtualScroller(
+                document.getElementById('content'),
+                [],
+                renderJj
+            ).virtualScroller
+
+            window.jjdata = jjdata
+            window.jj_labels = jj_labels
+
+            let order_type_el = document.getElementById('order_type');
+            jj_feature_fn.map(el=>{
+                let optEl = document.createElement('label');
+                optEl.innerHTML = `<input type="radio" name="radio" value="${el.name}"> ${el.text}`;
+                order_type_el.appendChild(optEl);
+            })
+
+            document.querySelector('#order_type input[value="'+options.order_type+'"]').checked = true;
+            renderPage()
+        })
+
+        function renderPage(){
+            let data = Array.from(window.jjdata);
+            data.sort((a,b)=>b.feature[options.order_type] - a.feature[options.order_type]);
+            if(options.order_direct){
+                data.reverse();
+            }
+            if(options.rate_change_5){
+                data = data.filter(el=>el.feature.netMaxMinusMin >= 5);
+            }
+
+            window.virtualScroller.setItems([]);
+            window.virtualScroller.setItems(data);
+            window.virtualScroller.scroll.scrollToY(0)
+        }
+
+        document.getElementById('order_type').addEventListener('change', function(e) {
+            options.order_type = e.target.value;
+            renderPage();
+        });
+
+        document.getElementById('order_direct').addEventListener('change', function(e) {
+            options.order_direct = e.target.checked;
+            renderPage();
+        });
+        document.getElementById('rate_change_5').addEventListener('change', function(e) {
+            options.rate_change_5 = e.target.checked;
+            renderPage();
+        });
+
+    </script>
+</body>
+</html>
