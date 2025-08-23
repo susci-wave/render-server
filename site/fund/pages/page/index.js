@@ -7,15 +7,16 @@ Date.prototype.format = function formatDate () {
     day = day < 10 ? `0${day}` : day;
     return `${year}-${month}-${day}`;
 }
+ 
 
 // 从服务器获取数据
-function fetchData(cnt, limit){
+function fetchData2(cnt, limit){
     let date = new Date();
     let attempts = 0;
     
-    function fetchNext(jjset_set) {
-        if (jjset_set.length >= cnt || attempts >= limit) {
-            return Promise.resolve(jjset_set);
+    function fetchNext(jjdata) {
+        if (jjdata.netset.length >= cnt || attempts >= limit) {
+            return Promise.resolve(jjdata);
         }
         
         attempts++;
@@ -28,42 +29,52 @@ function fetchData(cnt, limit){
                 }
             })
             .then(json => {
-                jjset_set.push({
+                jjdata.netset.push({
                     date: date.format(),
                     data: json
                 });
                 date.setDate(date.getDate() - 1);
-                return fetchNext(jjset_set);
+                return fetchNext(jjdata);
 
             })
             .catch(error => {
                 console.error('Fetch error:', error);
                 date.setDate(date.getDate() - 1);
-                return fetchNext(jjset_set);
+                return fetchNext(jjdata);
             });
     }
-    
-    return fetchNext([]);
+    return fetch(`../data/data-json/data-all.json`)
+            .then(res=>{
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            }).then(jjset=>{
+                return fetchNext({
+                    jjset: jjset,
+                    netset: []
+                });
+            }).catch(error=>{
+                console.error('Fetch error:', error);
+                alert(error)
+            })
 }
+ 
 
 // 合并基金净值数据
-function mergeNet(jjset_set){
-    let result = {}
-    jjset_set.forEach((jjset,idx) => {
-        Object.keys(jjset.data).forEach(key => {
-            let val = jjset.data[key];
-            if (!result[key]) {
-                result[key] = {
-                    name: val.name,
-                    code: val.code,
-                    sgstat: val.sgstat,
-                    net:[]
-                };
+function mergeNet2(jjset_set){
+    jjset_set.netset.forEach((netset, idx)=>{
+        Object.keys(netset.data).forEach(key=>{
+            let val = netset.data[key];
+            if(!jjset_set.jjset[key].net){
+                jjset_set.jjset[key].net = [];
             }
-            result[key].net[jjset_set.length-idx-1] = val.net;
+            jjset_set.jjset[key].net[jjset_set.netset.length - idx - 1] = val;
         })
-    });
-    result = Object.values(result);
+    })
+     
+    let result = Object.values(jjset_set.jjset);
     result = result.filter(el=>el.net.findIndex(net=>!net) == -1);
     result.forEach(el=>{
         calcNet(el);
@@ -75,19 +86,22 @@ let jj_feature_fn = [
     {
         name: 'netMax',
         text: '净值最大值',
-        fn: jj => Math.max(...jj.net)
+        fn: jj => Math.max(...jj.net),
+        hide: true
     },
     {
         name: 'netMin',
         text: '净值最小值',
-        fn: jj => Math.min(...jj.net)
+        fn: jj => Math.min(...jj.net),
+        hide: true
     }, 
     {
         name: 'netMaxMinusMin',
         text: '区间波动',
         fn: jj => {
             return ((jj.feature.netMax - jj.feature.netMin)/jj.feature.netMin*100).toFixed(2);
-        }
+        },
+        hide: true
     },
     {
         name: 'netLatestMinusMin',

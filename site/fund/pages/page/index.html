@@ -144,18 +144,16 @@
             2025年8月16日 - 2025年8月16日
         </div>
         <div class="filter-item">
-            <label for="order_direct">逆序</label>
             <input type="checkbox" id="order_direct">
+            <label for="order_direct">逆序</label>
+            <input type="checkbox" id="rate_change_5" checked>
             <label for="rate_change_5">浮动>=5</label>
-            <input type="checkbox" id="rate_change_5">
-            <label for="can_buy">购买</label>
             <input type="checkbox" id="can_buy" checked>
+            <label for="can_buy">购买</label>
         </div>
         <div class="filter-item">
-            <radio id="order_type">
-                <label><input type="radio" name="radio" value="0" > 浮动</label>
-                <label><input type="radio" name="radio" value="2"> 跌幅</label>
-            </radio>
+            <checkbox id="order_type">
+            </checkbox>
         </div>
     </div>
     <div id="content">
@@ -191,12 +189,11 @@
 
         function renderJj(one){
             let el = contentItemEl.cloneNode(true);
-            el.querySelector('.fund-name span').textContent = one.name;
+            el.querySelector('.fund-name span').textContent = one.name + '-' + one.feature.netMaxMinusMin;
             el.querySelector('.fund-name a').textContent = "("+ one.code +")";
             el.querySelector('.fund-name a').href = `https://fund.10jqka.com.cn/${one.code}/`;
             el.querySelector('.fund-details span').textContent = `
-                ${one.sgstat} 
-                ${jj_feature_fn.map(el=>el.text + ':' + one.feature[el.name]).join(' / ')}
+                ${jj_feature_fn.filter(el=>!el.hide).map(el=>el.text + ':' + one.feature[el.name]).join(' / ')}
                 `;
             const canvas = el.querySelector('.fund-chart canvas');
 
@@ -237,16 +234,17 @@
         let options = {
             days: 15,
             days_limit: 30,
-            order_type: jj_feature_fn[0].name,
+            order_type: [],
             order_direct: false,
+            rate_change_5: true,
             can_buy: true
         }
         
-        fetchData(options.days, options.days_limit).then(jjlist =>{
-            let jj_labels = jjlist.map(el => el.date).map(el=>el.substring(5)).reverse();
+        fetchData2(options.days, options.days_limit).then(jjlist =>{
+            let jj_labels = jjlist.netset.map(el=>el.date).map(el=>el.substring(5)).reverse();
             document.querySelector('.filter-item:nth-child(1)').textContent = `${jj_labels[0]} - ${jj_labels[jj_labels.length-1]}` 
 
-            let jjdata = mergeNet(jjlist);
+            let jjdata = mergeNet2(jjlist);
 
             window.virtualScroller = new VirtualScroller(
                 document.getElementById('content'),
@@ -260,17 +258,29 @@
             let order_type_el = document.getElementById('order_type');
             jj_feature_fn.map(el=>{
                 let optEl = document.createElement('label');
-                optEl.innerHTML = `<input type="radio" name="radio" value="${el.name}"> ${el.text}`;
+                optEl.innerHTML = `<input type="checkbox" name="checkbox" value="${el.name}"> ${el.text}`;
                 order_type_el.appendChild(optEl);
             })
 
-            document.querySelector('#order_type input[value="'+options.order_type+'"]').checked = true;
             renderPage()
         })
 
         function renderPage(){
             let data = Array.from(window.jjdata);
-            data.sort((a,b)=>b.feature[options.order_type] - a.feature[options.order_type]);
+
+            data.sort((a,b)=>{
+                for(let el of options.order_type){
+                    let ret = b.feature[el] - a.feature[el];
+                    if(ret > 0){
+                        return 1
+                    }
+                    if(ret < 0){
+                        return -1;
+                    }
+                }
+                return 0;
+            })
+
             if(options.order_direct){
                 data.reverse();
             }
@@ -284,7 +294,12 @@
         }
 
         document.getElementById('order_type').addEventListener('change', function(e) {
-            options.order_type = e.target.value;
+            if(e.target.checked){
+                options.order_type.push(e.target.value);
+            }else{
+                options.order_type = options.order_type.filter(el=>el!=e.target.value);
+            }
+
             renderPage();
         });
 
