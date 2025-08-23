@@ -160,8 +160,8 @@
         <div class="content-item">
             <div class="fund-info">
                 <div class="fund-name">
-                    <span></span>
                     <a target="_blank" referrerpolicy="no-referrer">基金代码</a>
+                    <span></span>
                 </div>
                 <div class="fund-details">
                     <span>申购状态 / rate</span>
@@ -189,8 +189,8 @@
 
         function renderJj(one){
             let el = contentItemEl.cloneNode(true);
-            el.querySelector('.fund-name span').textContent = one.name + '-' + one.feature.netMaxMinusMin;
-            el.querySelector('.fund-name a').textContent = "("+ one.code +")";
+            el.querySelector('.fund-name span').textContent = one.name;
+            el.querySelector('.fund-name a').textContent = one.code;
             el.querySelector('.fund-name a').href = `https://fund.10jqka.com.cn/${one.code}/`;
             el.querySelector('.fund-details span').textContent = `
                 ${jj_feature_fn.filter(el=>!el.hide).map(el=>el.text + ':' + one.feature[el.name]).join(' / ')}
@@ -242,6 +242,7 @@
         
         fetchData2(options.days, options.days_limit).then(jjlist =>{
             let jj_labels = jjlist.netset.map(el=>el.date).map(el=>el.substring(5)).reverse();
+            jj_labels.shift()
             document.querySelector('.filter-item:nth-child(1)').textContent = `${jj_labels[0]} - ${jj_labels[jj_labels.length-1]}` 
 
             let jjdata = mergeNet2(jjlist);
@@ -271,12 +272,7 @@
             data.sort((a,b)=>{
                 for(let el of options.order_type){
                     let ret = b.feature[el] - a.feature[el];
-                    if(ret > 0){
-                        return 1
-                    }
-                    if(ret < 0){
-                        return -1;
-                    }
+                    if(ret != 0) return ret;
                 }
                 return 0;
             })
@@ -285,7 +281,7 @@
                 data.reverse();
             }
             if(options.rate_change_5){
-                data = data.filter(el=>el.feature.netMaxMinusMin >= 5);
+                data = data.filter(el=>el.feature.rateRange >= 5);
             }
 
             window.virtualScroller.setItems([]);
