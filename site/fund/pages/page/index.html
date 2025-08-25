@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>基金净值</title>
+    <title>曲线图</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -157,6 +157,7 @@
         </div>
     </div>
     <div id="content">
+        <div style="text-align: center;" id="msgEl">mssssg</div>
         <div class="content-item">
             <div class="fund-info">
                 <div class="fund-name">
@@ -186,6 +187,7 @@
         });
         
         let contentItemEl = document.querySelector('#content>.content-item').cloneNode(true);
+        document.querySelector('#content>.content-item').remove();
 
         function renderJj(one){
             let el = contentItemEl.cloneNode(true);
@@ -241,6 +243,7 @@
         }
         
         fetchData2(options.days, options.days_limit).then(jjlist =>{
+            refreshLog('loaded funds')
             let jj_labels = jjlist.netset.map(el=>el.date).map(el=>el.substring(5)).reverse();
             jj_labels.shift()
             document.querySelector('.filter-item:nth-child(1)').textContent = `${jj_labels[0]} - ${jj_labels[jj_labels.length-1]}` 
@@ -267,6 +270,7 @@
         })
 
         function renderPage(){
+            refreshLog('render funds')
             let data = Array.from(window.jjdata);
 
             data.sort((a,b)=>{
@@ -311,6 +315,10 @@
             options.can_buy = e.target.checked;
             renderPage();
         });
+
+        function refreshLog(msg){
+            document.getElementById('msgEl').textContent = msg;
+        }
 
     </script>
 </body>

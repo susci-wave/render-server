@@ -20,6 +20,7 @@ function fetchData2(cnt, limit){
         }
         
         attempts++;
+        refreshLog('loading fund net ' + date.format())
         return fetch(`../data/data-json/data-${date.format()}.json`)
             .then(res => {
                 if (res.ok) {
@@ -43,6 +44,7 @@ function fetchData2(cnt, limit){
                 return fetchNext(jjdata);
             });
     }
+    refreshLog('start loading fund')
     return fetch(`../data/data-json/data-all.json`)
             .then(res=>{
                 if (res.ok) {
@@ -56,6 +58,7 @@ function fetchData2(cnt, limit){
                     netset: []
                 });
             }).catch(error=>{
+                refreshLog('loaded fund error ' + error)
                 console.error('Fetch error:', error);
                 alert(error)
             })
