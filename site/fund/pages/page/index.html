@@ -317,7 +317,7 @@
         });
 
         function refreshLog(msg){
-            document.getElementById('msgEl').textContent = msg;
+            document.getElementById('msgEl') && (document.getElementById('msgEl').textContent = msg);
         }
 
     </script>
