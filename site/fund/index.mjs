@@ -41,7 +41,7 @@ function register(app){
                 });
             }
 
-            const filePath = path.join(__dirname, 'pages/data/data-json/', originalname);
+            const filePath = path.join(__dirname, 'pages', originalname.replace('_','/'));
 
             fs.writeFileSync(filePath, buffer);
 
