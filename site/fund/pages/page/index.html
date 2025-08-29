@@ -192,6 +192,7 @@
         function renderJj(one){
             let el = contentItemEl.cloneNode(true);
             el.querySelector('.fund-name span').textContent = one.name;
+            if(one.realNet) el.querySelector('.fund-name span').style.color = 'red';
             el.querySelector('.fund-name a').textContent = one.code;
             el.querySelector('.fund-name a').href = `https://fund.10jqka.com.cn/${one.code}/`;
             el.querySelector('.fund-details span').textContent = `

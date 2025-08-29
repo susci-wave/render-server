@@ -182,8 +182,9 @@ function calcNet(jj){
 // 计算连续上涨天数
 function calcUpDayCnt(jj){
     let cnt = 0;
+    let range = jj.feature.netRange * 0.1;
     for(let i=jj.net.length-1; i>0; i--){
-        if(jj.net[i] >= jj.net[i-1]){
+        if(jj.net[i] >= jj.net[i-1]-range){
             cnt++;
         }else{
             return cnt;
