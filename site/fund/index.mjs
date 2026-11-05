@@ -8,7 +8,6 @@ import multer from 'multer';
 const upload = multer();
 
 let listenUri = process.env['URI_FUND'] || '/fund'
-let UPLOAD_TOKEN = process.env['FUND_UPLOAD_TOKEN']
 let __dirname = getDir(import.meta.url)
 
 function register(app){
@@ -19,12 +18,6 @@ function register(app){
 
     // 处理带文件的 form-data
     app.post(listenUri+'/push', upload.single('file'), (req, res) => {
-        if(!UPLOAD_TOKEN || UPLOAD_TOKEN !== req.headers['x-fund-upload-token']){
-            res.json({
-                message: 'token is invalid',
-            });
-            return;
-        }
         try {
             if(!req.file || !req.file.originalname){
                 res.json({

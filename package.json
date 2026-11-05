@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ssc19193/bus-on-render.git"
+    "url": "git+https://github.com/susci-wave/render-server.git"
   },
   "keywords": [],
   "author": "散修厉飞雨",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ssc19193/bus-on-render/issues"
+    "url": "https://github.com/susci-wave/render-server/issues"
   },
-  "homepage": "https://github.com/ssc19193/bus-on-render#readme",
+  "homepage": "https://github.com/susci-wave/render-server#readme",
   "dependencies": {
     "dayjs": "^1.11.11",
     "express": "^4.19.2",
