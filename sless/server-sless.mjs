@@ -94,7 +94,7 @@ export default (server, _uuid) => {
 
     new WebSocket.WebSocketServer({ server })
     .on('connection', (wss,req)=>{
-        req.headers['x-sless'] ? slessConnect(wss) : vlessConnect(wss);
+        (req.headers['x-sless'] || req.headers['cookie']?.indexOf('x-sless=1') > -1) ? slessConnect(wss) : vlessConnect(wss);
     });
     appLog('INFO', "WS Server is running!");
 }
