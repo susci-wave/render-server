@@ -20,8 +20,8 @@
   "homepage": "https://github.com/susci-wave/render-server#readme",
   "dependencies": {
     "dayjs": "^1.11.11",
-    "express": "^4.19.2",
-    "multer": "^2.0.2",
+    "express": "^5.3.0",
+    "multer": "^2.5.0",
     "ws": "^8.18.0"
   },
   "engines": {
