@@ -5,7 +5,7 @@
   "main": "app.mjs",
   "scripts": {
     "dev": "node --env-file=.env app.mjs",
-    "dev16": "env-cmd node app.mjs"
+    "dev16": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,5 @@
     "node": ">=14"
   },
   "devDependencies": {
-    "env-cmd": "^10.1.0"
   }
 }
