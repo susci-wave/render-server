@@ -1,26 +1,36 @@
 function toSlessHeader(uuid, targetPort, targetHost) {
     let buffer = Buffer.alloc(2+ uuid.length + 2 + 2 + targetHost.length+4);
     buffer.writeUInt16LE(uuid.length, 0);
-    buffer.set(uuid, 2);
+    buffer.write(uuid, 2, 'ascii');
     buffer.writeUInt16LE(targetPort, uuid.length+2);
     buffer.writeUInt16LE(targetHost.length, uuid.length+4);
-    buffer.set(targetHost, uuid.length+6);
-    buffer.writeUInt32LE(Date.now()/1000, uuid.length + 6 + targetHost.length);
+    buffer.write(targetHost, uuid.length+6, 'ascii');
+    buffer.writeUInt32LE(Math.floor(Date.now()/1000), uuid.length + 6 + targetHost.length);
     return buffer;
 }
 
+// 解析失败返回 null（不再抛 RangeError），调用方负责关闭连接
 function fromSlessHeader(header) {
-    let uuidlength = header.readUInt16LE(0);
-    let uuid = header.slice(2, 2+uuidlength).toString('ascii');
-    let targetPort = header.readUInt16LE(2+uuidlength);
-    let targetHostLength = header.readUInt16LE(2+uuidlength+2);
-    let targetHost = header.slice(uuidlength+6, uuidlength+6 + targetHostLength).toString('ascii');
-    let timestamp = header.readUInt32LE(uuidlength+6+targetHostLength)*1000;
+    if (!Buffer.isBuffer(header) || header.length < 8) return null;
+
+    const uuidlength = header.readUInt16LE(0);
+    if (uuidlength === 0 || uuidlength > 128) return null;
+
+    const base = 2 + uuidlength;
+    if (header.length < base + 6) return null;
+
+    const targetPort = header.readUInt16LE(base);
+    const targetHostLength = header.readUInt16LE(base + 2);
+    if (!targetPort || !targetHostLength || targetHostLength > 255) return null;
+
+    const hostEnd = base + 4 + targetHostLength;
+    if (header.length < hostEnd + 4) return null;
+
     return {
-        uuid,
+        uuid: header.subarray(2, base).toString('ascii'),
         targetPort,
-        targetHost,
-        timestamp
+        targetHost: header.subarray(base + 4, hostEnd).toString('ascii'),
+        timestamp: header.readUInt32LE(hostEnd) * 1000
     }
 }
  
