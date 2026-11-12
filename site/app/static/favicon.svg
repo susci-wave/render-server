@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>导航首页</title>
+  <!-- 浅蓝底 + 深蓝航点，沿用首页卡片的配色（#e8f0fe / #d8e5f5 / #2367a5） -->
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2f8ff"/>
+      <stop offset="1" stop-color="#cfe2f7"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f7cc0"/>
+      <stop offset="1" stop-color="#1a5588"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#plate)"/>
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none"
+        stroke="#7ba6cf" stroke-opacity=".55" stroke-width="1.5"/>
+  <!-- 罗盘刻度 / 航点标记 -->
+  <g stroke="#2367a5" stroke-width="2.5" stroke-linecap="butt">
+    <line x1="32" y1="8" x2="32" y2="12"/>
+    <line x1="32" y1="52" x2="32" y2="56"/>
+    <line x1="8" y1="32" x2="12" y2="32"/>
+    <line x1="52" y1="32" x2="56" y2="32"/>
+  </g>
+  <path d="M32 14 50 32 32 50 14 32Z" fill="url(#mark)"/>
+  <path d="M32 25 39 32 32 39 25 32Z" fill="#e9f3fe"/>
+</svg>

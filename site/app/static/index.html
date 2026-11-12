@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+  <meta name="theme-color" content="#e8f0fe">
+  <title>导航首页</title>
+  <style>
+    /* 全局重置与字体 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh; /* 移动端以可视区高度为准，避免浏览器工具栏带来额外滚动 */
+      background: linear-gradient(145deg, #f8faff 0%, #eef2f9 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    /* 主卡片容器 */
+    .home-card {
+      max-width: 700px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(6px);
+      border-radius: 3.5rem;
+      padding: 3rem 2.5rem;
+      box-shadow: 
+        0 25px 45px -12px rgba(0, 20, 40, 0.25),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    /* 标题与副标题 */
+    .hero {
+      text-align: center;
+      margin-bottom: 2.8rem;
+    }
+
+    .hero h1 {
+      font-size: 2.3rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #0c1e30;
+      margin-bottom: 0.6rem;
+      text-shadow: 0 2px 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #2e4a6b;
+      opacity: 0.85;
+      font-weight: 400;
+      border-bottom: 1.5px dashed #b7c9e0;
+      display: inline-block;
+      padding-bottom: 0.5rem;
+    }
+
+    /* 链接网格 */
+    .link-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: center;
+    }
+
+    /* 每个链接卡片：不画外框，只靠图标和文字撑起视觉 */
+    .link-item {
+      flex: 1 1 180px;
+      min-width: 180px;
+      background: transparent;
+      border: 0;
+      border-radius: 2.2rem;
+      transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* 悬停效果：只轻微上浮，不再冒出边框或阴影 */
+    .link-item:hover {
+      transform: translateY(-6px);
+    }
+
+    .link-item:active {
+      transform: translateY(-2px);
+      transition-duration: 0.08s;
+    }
+
+    /* 卡片内部内容区 */
+    .link-content {
+      flex: 1 1 auto; /* 撑满卡片高度，方便底部按钮对齐 */
+      padding: 1.55rem 1.2rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* 圆形图标背景 */
+    .link-icon {
+      width: 62px;
+      height: 62px;
+      background: linear-gradient(135deg, #e8f0fe, #d8e5f5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.1rem;
+      box-shadow: 0 6px 12px -6px rgba(0, 40, 80, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.9);
+      transition: background 0.2s;
+    }
+
+    .link-item:hover .link-icon {
+      background: linear-gradient(135deg, #d9e8ff, #c2d9f5);
+    }
+
+    /* 图标图形 (纯CSS / SVG 内联) */
+    .link-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: #2367a5;
+      stroke-width: 1.7;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.2s;
+    }
+
+    .link-item:hover .link-icon svg {
+      stroke: #0c4e7e;
+    }
+
+    /* 链接标题 */
+    .link-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #10314f;
+      margin-bottom: 0.35rem;
+      line-height: 1.25;
+    }
+
+    /* 链接描述文字 */
+    .link-desc {
+      font-size: 0.85rem;
+      color: #42678a;
+      opacity: 0.8;
+      font-weight: 400;
+      margin-bottom: 0.95rem;
+    }
+
+    /* 提示可点击的小标签 (使用箭头) */
+    .link-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #2367a5;
+      background: #e4eefb;
+      padding: 0.32rem 0.85rem;
+      border-radius: 40px;
+      transition: all 0.2s;
+      margin-top: auto; /* 描述换行行数不同时，按钮仍贴底对齐 */
+      letter-spacing: 0.3px;
+    }
+
+    .link-item:hover .link-cta {
+      background: #2367a5;
+      color: white;
+    }
+
+    .link-cta span {
+      font-size: 1rem;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+
+    .link-item:hover .link-cta span {
+      transform: translateX(4px);
+    }
+
+    /* 为第二个卡片保留一些微妙的色差 */
+    .link-item:nth-child(2) .link-icon {
+      background: linear-gradient(135deg, #e6f0fa, #d2e2f2);
+    }
+
+    /* 小屏幕适配：改为横向紧凑条目，三张卡片也能一屏放下 */
+    @media (max-width: 500px) {
+      body {
+        padding: 0.85rem;
+      }
+
+      .home-card {
+        padding: 1.4rem 1rem;
+        border-radius: 1.8rem;
+      }
+
+      .hero {
+        margin-bottom: 1.25rem;
+      }
+
+      .hero h1 {
+        font-size: 1.55rem;
+        margin-bottom: 0.35rem;
+      }
+
+      .hero p {
+        font-size: 0.88rem;
+        padding-bottom: 0.3rem;
+      }
+
+      .link-grid {
+        gap: 0.65rem;
+      }
+
+      .link-item {
+        flex: 1 1 100%;
+        min-width: 0;
+      }
+
+      /* 图标在左、文字在右，卡片高度从 ~260px 压到 ~90px */
+      .link-content {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas:
+          'icon title'
+          'icon desc';
+        align-items: center;
+        column-gap: 0.9rem;
+        padding: 0.7rem 0.95rem;
+        text-align: left;
+      }
+
+      .link-icon {
+        grid-area: icon;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 0;
+      }
+
+      .link-icon svg {
+        width: 26px;
+        height: 26px;
+      }
+
+      .link-title {
+        grid-area: title;
+        font-size: 1.12rem;
+        margin-bottom: 0.15rem;
+      }
+
+      .link-desc {
+        grid-area: desc;
+        font-size: 0.8rem;
+        margin-bottom: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* 手机上省掉“前往 →”标签，整张卡片本身就是可点击区域 */
+      .link-cta {
+        display: none;
+      }
+    }
+
+    /* 横屏 / 矮窗口：内容超高时从顶部排布，避免居中把顶部裁掉且无法滚动到 */
+    @media (max-height: 560px) {
+      body {
+        align-items: flex-start;
+      }
+    }
+
+    /* 为减少动态效果偏好的人 */
+    @media (prefers-reduced-motion: reduce) {
+      .link-item,
+      .link-icon,
+      .link-cta,
+      .link-cta span {
+        transition: none;
+      }
+      .link-item:hover {
+        transform: none;
+      }
+    }
+
+    /* 简单聚焦样式，方便键盘导航 */
+    .link-item:focus-visible {
+      outline: 3px solid #2367a5;
+      outline-offset: 4px;
+    }
+  </style>
+</head>
+<body>
+  <main class="home-card">
+    <!-- 卡片由下方 <script> 中的 SITES 数组渲染，此处留空即可 -->
+    <div class="link-grid"></div>
+
+    <!-- 底部可增加极简装饰说明，不需要可以删除，不干扰布局 -->
+    <div style="margin-top: 2rem; text-align: center; font-size: 0.75rem; color: #a0b8d0; letter-spacing: 0.3px;">
+    </div>
+  </main>
+
+  <script src="./sites.js"></script>
+  <script>
+    /* 把 SITES 渲染成卡片 */
+    (function renderSites() {
+      const grid = document.querySelector('.link-grid');
+      if (!grid) return;
+
+      const isExternal = (url) => /^(https?:)?\/\//i.test(url);
+      const frag = document.createDocumentFragment();
+
+      SITES.forEach((site) => {
+        if (!site || !site.href) return; // 跳过没填地址的条目
+
+        const a = document.createElement('a');
+        a.className = 'link-item';
+        a.href = site.href;
+
+        // 外部链接才新开标签页，站内二级目录留在当前页
+        if (isExternal(site.href)) {
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+        }
+
+        const content = document.createElement('div');
+        content.className = 'link-content';
+
+        const icon = document.createElement('div');
+        icon.className = 'link-icon';
+        icon.innerHTML = ICONS[site.icon] || ICONS.globe;
+
+        const title = document.createElement('div');
+        title.className = 'link-title';
+        title.textContent = site.title || '未命名入口';
+
+        const desc = document.createElement('div');
+        desc.className = 'link-desc';
+        desc.textContent = site.desc || site.href;
+
+        const cta = document.createElement('div');
+        cta.className = 'link-cta';
+        cta.innerHTML = '前往 <span>→</span>';
+
+        content.append(icon, title, desc, cta);
+        a.append(content);
+        frag.append(a);
+      });
+
+      grid.append(frag);
+    })();
+  </script>
+</body>
+</html>
