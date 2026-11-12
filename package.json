@@ -4,7 +4,7 @@
   "description": "部署在render.com的总线服务",
   "main": "app.mjs",
   "scripts": {
-    "dev": "node --env-file=.env app.mjs",
+    "dev": "node app.mjs",
     "dev16": "node app.js"
   },
   "repository": {
@@ -21,12 +21,9 @@
   "dependencies": {
     "dayjs": "^1.11.11",
     "express": "^5.3.0",
-    "multer": "^2.5.0",
     "ws": "^8.18.0"
   },
   "engines": {
-    "node": ">=14"
-  },
-  "devDependencies": {
+    "node": ">=20.12.0"
   }
 }

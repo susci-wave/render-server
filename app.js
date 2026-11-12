@@ -1,27 +1,7 @@
-
-# 用于serv00.com和node<=16
-
-const fs = require('fs');
-const path = require('path');
-env_file = path.resolve('.env')
-
-if (!fs.existsSync(env_file)){
-    console.error('.env not found!');
-}
-
-for (let line of fs.readFileSync(env_file, 'utf8').split(/\r?\n/)) {
-    line = line.trim();
-    if (!line || line.startsWith('#')) continue;
-    const i = line.indexOf('=');
-    if (i === -1) continue;
-    const key = line.slice(0, i).trim();
-    let val = line.slice(i + 1).trim().replace(/^["']|["']$/g, '');
-    if (process.env[key] === undefined) process.env[key] = val;
-}
+// 用于 serv00.com 和 node<=16 的兼容入口
+// .env 的生成/读取已统一由 app.mjs 首先导入的 env.mjs 处理
 
 async function loadModule() {
-  const module = await import('./app.mjs');
-  console.log(module);
+    await import('./app.mjs')
 }
-loadModule();
-
+loadModule()
