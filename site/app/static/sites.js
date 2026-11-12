@@ -34,6 +34,18 @@ const SITES = [
     href: './saltline.html',
     icon: 'crosshair',
     },
+    {
+    title: 'clockmaker',
+    desc: '@Flelix Rieseberg',
+    href: './clockmaker.html',
+    icon: 'crosshair',
+    },
+    {
+    title: 'tidewright',
+    desc: '@Flelix Rieseberg',
+    href: './tidewright.html',
+    icon: 'crosshair',
+    },
 ];
 
 /* 内置图标（纯内联 SVG，不请求任何外部资源） */

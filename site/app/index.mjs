@@ -22,6 +22,12 @@ function register(app){
     app.get('/saltline.html', function(req,res){
         res.sendFile(path.join(__dirname, 'static/saltline.html'));
     })
+    app.get('/tidewright.html', function(req,res){
+        res.sendFile(path.join(__dirname, 'static/tidewright.html'));
+    })
+    app.get('/clockmaker.html', function(req,res){
+        res.sendFile(path.join(__dirname, 'static/clockmaker.html'));
+    })
 }
 export default register
 
