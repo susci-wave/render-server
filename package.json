@@ -4,6 +4,7 @@
   "description": "部署在render.com的总线服务",
   "main": "app.mjs",
   "scripts": {
+    "start": "node app.mjs",
     "dev": "node app.mjs",
     "dev16": "node app.js"
   },
